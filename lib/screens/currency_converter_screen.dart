@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flag/flag.dart';
 import '../models/currency.dart';
 import '../services/currency_service.dart';
 import '../theme/app_theme.dart';
@@ -296,17 +297,14 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen>
             ),
             child: Row(
               children: [
-                CircleAvatar(
-                  radius: 20,
-                  backgroundColor: Colors.white.withValues(alpha: 0.3),
-                  child: Text(
-                    _fromCurrency.symbol,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
+                ClipOval(
+             child: Flag.fromString(
+             _fromCurrency.countryCode,
+              height: 40,
+              width: 40,
+              fit: BoxFit.cover,
+           ),
+          ),  
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(

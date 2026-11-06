@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flag/flag.dart';
 import '../models/currency.dart';
 import '../theme/app_theme.dart';
 
@@ -104,18 +105,14 @@ class _CurrencyPickerSheetState extends State<CurrencyPickerSheet> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  leading: CircleAvatar(
-                    backgroundColor: isSelected
-                        ? AppColors.primary
-                        : AppColors.primary.withOpacity(0.1),
-                    child: Text(
-                      currency.symbol,
-                      style: TextStyle(
-                        color: isSelected ? Colors.white : AppColors.primary,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
+                leading: ClipOval(
+                child: Flag.fromString(
+                 currency.countryCode,
+                   height: 40,
+                   width: 40,
+                   fit: BoxFit.cover,
+            ),
+          ),   
                   title: Text(
                     currency.code,
                     style: const TextStyle(fontWeight: FontWeight.w600),

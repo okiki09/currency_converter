@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flag/flag.dart';
 import '../models/currency.dart';
 import '../theme/app_theme.dart';
 
@@ -28,22 +29,28 @@ class CurrencyTile extends StatelessWidget {
         child: Row(
           children: [
             Container(
-              width: 46,
-              height: 46,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                gradient: AppColors.primaryGradient,
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: Text(
-                currency.symbol,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
+            width: 46,
+            height: 46,
+            decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14),
+            boxShadow: [
+           BoxShadow(
+           color: Colors.black.withValues(alpha: 0.2),
+         blurRadius: 4,
+        offset: const Offset(0, 2),
+      )
+    ]
+  ),
+  child: ClipRRect(
+    borderRadius: BorderRadius.circular(14),
+    child: Flag.fromString(
+      currency.countryCode,
+      height: 46,
+      width: 46,
+      fit: BoxFit.cover,
+        ),
+       ),
+       ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
