@@ -19,14 +19,8 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen>
   final CurrencyService _service = CurrencyService();
   final TextEditingController _amountController = TextEditingController();
 
- Currency _fromCurrency = availableCurrencies.firstWhere(
-  (c) => c.code == 'USD',
-  orElse: () => availableCurrencies[0],
-);
-Currency _toCurrency = availableCurrencies.firstWhere(
-  (c) => c.code == 'NGN',
-  orElse: () => availableCurrencies[1],
-);
+  Currency _fromCurrency = availableCurrencies[0]; // USD
+  Currency _toCurrency = availableCurrencies[1];   // EUR
 
   Map<String, dynamic>? _rates;
   bool _isLoading = false;
@@ -73,25 +67,24 @@ Currency _toCurrency = availableCurrencies.firstWhere(
   }
 
   void _calculateConversion() {
-  if (_rates == null) return;
+    if (_rates == null) return;
+    final rate = _rates![_toCurrency.code];
+    if (rate == null) {
+      setState(() => _convertedAmount = null);
+      return;
+    }
+    
+    final text = _amountController.text.trim();
+    if (text.isEmpty) {
+      setState(() => _convertedAmount = null);
+      return;
+    }
 
-  final rate = _rates![_toCurrency.code];
-  if (rate == null) {
-    setState(() => _convertedAmount = null);
-    return;
+    final amount = double.tryParse(text) ?? 0;
+    setState(() {
+      _convertedAmount = amount * (rate as num).toDouble();
+    });
   }
-
-  final text = _amountController.text.trim();
-  if (text.isEmpty) {
-    setState(() => _convertedAmount = null);
-    return;
-  }
-
-  final amount = double.tryParse(text) ?? 0;
-  setState(() {
-    _convertedAmount = amount * (rate as num).toDouble();
-  });
-}
 
   void _swapCurrencies() {
     _swapAnimController.forward(from: 0);
@@ -219,17 +212,17 @@ Currency _toCurrency = availableCurrencies.firstWhere(
   Widget _buildConvertCard() {
     return Container(
       padding: const EdgeInsets.all(20),
-    decoration: BoxDecoration(
-  color: AppColors.cardBg,        // was Colors.white
-  borderRadius: BorderRadius.circular(24),
-  boxShadow: [
-    BoxShadow(
-      color: Colors.white.withOpacity(0.03),   // subtle glow instead of dark shadow
-      blurRadius: 20,
-      offset: const Offset(0, 8),
-    ),
-  ],
-),
+      decoration: BoxDecoration(
+        gradient: AppColors.cardGradient,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withValues(alpha: 0.3),
+            blurRadius: 24,
+            offset: const Offset(0, 12),
+          ),
+        ],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -286,14 +279,14 @@ Currency _toCurrency = availableCurrencies.firstWhere(
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.18),
+              color: Colors.white.withValues(alpha: 0.18),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Row(
               children: [
                 CircleAvatar(
                   radius: 20,
-                  backgroundColor: Colors.white.withOpacity(0.3),
+                  backgroundColor: Colors.white.withValues(alpha: 0.3),
                   child: Text(
                     _fromCurrency.symbol,
                     style: const TextStyle(
@@ -369,11 +362,11 @@ Currency _toCurrency = availableCurrencies.firstWhere(
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.cardBg,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.white.withValues(alpha: 0.03),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -412,7 +405,7 @@ Currency _toCurrency = availableCurrencies.firstWhere(
                   borderRadius: BorderRadius.circular(14),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.primary.withOpacity(0.35),
+                      color: AppColors.primary.withValues(alpha: 0.35),
                       blurRadius: 14,
                       offset: const Offset(0, 6),
                     ),
@@ -444,76 +437,51 @@ Currency _toCurrency = availableCurrencies.firstWhere(
       );
     }
     if (_errorMessage != null) {
-     Container(
-  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-  decoration: BoxDecoration(
-    color: Colors.white.withOpacity(0.12),
-    borderRadius: BorderRadius.circular(14),
-  ),
-  child: Row(
-    children: [
-      Text(
-        _fromCurrency.symbol,
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 32,
-          fontWeight: FontWeight.w600,
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.error.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(14),
         ),
-      ),
-      const SizedBox(width: 8),
-      Expanded(
-        child: TextField(
-          controller: _amountController,
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 34,
-            fontWeight: FontWeight.w700,
-            height: 1.1,
-          ),
-          cursorColor: Colors.white,
-          decoration: const InputDecoration(
-            border: InputBorder.none,
-            hintText: '0.00',
-            hintStyle: TextStyle(color: Colors.white54),
-            isDense: true,
-            contentPadding: EdgeInsets.zero,
-          ),
-          inputFormatters: [
-            FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,4}')),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.error_outline,
+                    color: AppColors.error, size: 20),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    _errorMessage!,
+                    style: const TextStyle(
+                      color: AppColors.error,
+                      fontSize: 13,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            TextButton(
+              onPressed: _fetchRates,
+              child: const Text('Retry'),
+            ),
           ],
-          onChanged: (_) => _calculateConversion(),
         ),
-      ),
-      if (_amountController.text.isNotEmpty)
-        IconButton(
-          icon: const Icon(Icons.clear, color: Colors.white70, size: 20),
-          onPressed: () {
-            _amountController.clear();
-            _calculateConversion();
-          },
-        ),
-    ],
-  ),
-);
+      );
     }
     if (_convertedAmount == null) {
       return const SizedBox.shrink();
     }
+    
+    // 👇 THIS IS THE FIXED RESULT BOX 👇
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppColors.accent.withOpacity(0.12),
-            AppColors.primary.withOpacity(0.08),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        color: AppColors.cardBg, // Dark background
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.accent.withOpacity(0.3)),
+        border: Border.all(color: AppColors.accent.withValues(alpha: 0.3)), // Teal border
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -544,7 +512,7 @@ Currency _toCurrency = availableCurrencies.firstWhere(
               style: const TextStyle(
                 fontSize: 30,
                 fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
+                color: AppColors.textPrimary, // White text on dark background
                 height: 1.1,
               ),
             ),
