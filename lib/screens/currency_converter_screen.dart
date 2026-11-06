@@ -20,7 +20,7 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen>
   final TextEditingController _amountController = TextEditingController();
 
   Currency _fromCurrency = availableCurrencies[0]; // USD
-  Currency _toCurrency = availableCurrencies[1];   // EUR
+  Currency _toCurrency = availableCurrencies[1]; // EUR
 
   Map<String, dynamic>? _rates;
   bool _isLoading = false;
@@ -73,7 +73,7 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen>
       setState(() => _convertedAmount = null);
       return;
     }
-    
+
     final text = _amountController.text.trim();
     if (text.isEmpty) {
       setState(() => _convertedAmount = null);
@@ -235,45 +235,57 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen>
             ),
           ),
           const SizedBox(height: 6),
-          Row(
-            children: [
-              Text(
-                _fromCurrency.symbol,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 32,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: TextField(
-                  controller: _amountController,
-                  keyboardType:
-                      const TextInputType.numberWithOptions(decimal: true),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Row(
+              children: [
+                Text(
+                  _fromCurrency.symbol,
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 40,
-                    fontWeight: FontWeight.w700,
-                    height: 1.1,
+                    fontSize: 32,
+                    fontWeight: FontWeight.w600,
                   ),
-                  cursorColor: Colors.white,
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                    hintText: '0.00',
-                    hintStyle: TextStyle(color: Colors.white54),
-                    isDense: true,
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(
-                      RegExp(r'^\d*\.?\d{0,4}'),
-                    ),
-                  ],
-                  onChanged: (_) => _calculateConversion(),
                 ),
-              ),
-            ],
+                const SizedBox(width: 8),
+                Expanded(
+                  child: TextField(
+                    controller: _amountController,
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 34,
+                      fontWeight: FontWeight.w700,
+                      height: 1.1,
+                    ),
+                    cursorColor: Colors.white,
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                      hintText: '0.00',
+                      hintStyle: TextStyle(color: Colors.white54),
+                      isDense: true,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,4}')),
+                    ],
+                    onChanged: (_) => _calculateConversion(),
+                  ),
+                ),
+                if (_amountController.text.isNotEmpty)
+                  IconButton(
+                    icon: const Icon(Icons.clear, color: Colors.white70, size: 20),
+                    onPressed: () {
+                      _amountController.clear();
+                      _calculateConversion();
+                    },
+                  ),
+              ],
+            ),
           ),
           const SizedBox(height: 20),
           Container(
@@ -440,7 +452,7 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen>
       return Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.error.withValues(alpha: 0.08),
+          color: AppColors.error.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(14),
         ),
         child: Column(
@@ -474,14 +486,13 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen>
       return const SizedBox.shrink();
     }
     
-    // 👇 THIS IS THE FIXED RESULT BOX 👇
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: AppColors.cardBg, // Dark background
+        color: AppColors.cardBg, 
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.accent.withValues(alpha: 0.3)), // Teal border
+        border: Border.all(color: AppColors.accent.withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -512,7 +523,7 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen>
               style: const TextStyle(
                 fontSize: 30,
                 fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary, // White text on dark background
+                color: Colors.white,
                 height: 1.1,
               ),
             ),
