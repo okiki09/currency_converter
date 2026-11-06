@@ -42,4 +42,5 @@ const List<Currency> availableCurrencies = [
   Currency(code: 'ZAR', name: 'South African Rand', symbol: 'R', countryCode: 'ZA'),
   Currency(code: 'RUB', name: 'Russian Ruble', symbol: '₽', countryCode: 'RU'),
   Currency(code: 'TRY', name: 'Turkish Lira', symbol: '₺', countryCode: 'TR'),
+  Currency(code: 'KWD', name: 'Kuwaiti Dinar', symbol: 'KD', countryCode: 'KW'),
 ];
